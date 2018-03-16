@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>销售</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet"  href="../jquery/jquery.mobile-1.4.5.css">
+	<script src="../jquery/jquery.js"></script>
+	<script src="../jquery/jquery.mobile-1.4.5.js"></script>
+</head>
+<!-- <style>
+	.img1{
+		width:1800px;
+		heigth:100px;
+		float:left;
+	}
+	.img1 img{
+		float:left;
+		width:360px;
+		heigth:100px;
+		
+	}
+</style> -->
+<body>
+<!-- 销售信息 -->
+<div data-role="page" id="index">
+	<div data-role="header">
+		<p style="text-align:center"><strong>出售信息</strong></p>
+	</div>
+	<div data-role="main">
+		<fieldset data-role="fieldcontain">
+    		<label for="day">选择地址：</label>
+    		<select name="index_addr" id="index_addr" onchange="search('onload')">
+      			<option value="后海校区">后海校区</option>
+      			<option value="南校区">南校区</option>
+      			<option value="西丽校区">西丽校区</option>
+    		</select>
+ 		</fieldset>
+		<input type="search" placeholder="请输入搜索内容" onkeypress="search('search')" onkeydown="search('search')" id="index_search">
+		<div class="ui-field-contain">
+			<ul data-role="listview" data-inset="true" id="list"></ul>
+		</div>
+	</div>
+	<div data-role="footer" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-ajax=false href="lease.html" data-icon="camera">租赁</a></li>
+				<li><a data-ajax=false href="purchase.html" data-icon="carat-l">出售</a></li>
+				<li><a data-ajax=false href="imformation.html" data-icon="carat-r">个人中心 </a></li>
+			</ul>
+		</div>
+		</div>
+</div>
+<!-- 详细信息 -->
+<div data-role="page" id="detail">
+	<div data-role="header">
+		<p style="text-align:center"><strong>详细信息</strong></p>
+	</div>
+	<div data-role="main">
+		<div id="detail_img">
+			<img src="" id="detail_img1"/>
+			<img src=""/>
+			<img src=""/>
+			<img src=""/>
+			<img src=""/>
+		</div>
+		<h3 id="detail_h">商品名称：</h3>
+		<p id="detail_p1">商品介绍：</p>
+		<p id="detail_p2">商品价格：</p>
+	</div>
+	<div data-role="footer">
+	<div data-role="navbar">
+		<ul>
+			<li><a  data-ajax=false href="#send_news" >联系卖家</a></li>
+			<li><a  data-ajax=false href="#" onclick="purchase_now()">立即购买</a></li>
+			<li><a  data-ajax=false class="ui-btn ui-corner-all" data-rel="back">返回</a></li>
+		</ul>
+	</div>
+	</div>
+</div>
+<!-- 发送消息 -->
+<div data-role="page" id="send_news">
+	<div data-role="header">
+		<h3>发送消息</h3>
+	</div>
+	<div data-role="main">
+		<div>	
+			<input type="text" placeholder="请输入发送消息内容" id="sendnews_data">
+			<input type="button" value="发送" onclick="send_news()"/>			
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	var jsonData;
+	var id=0;
+	window.onload=function()
+	{
+		search("onload");
+	}
+	function search(find)
+	{
+		var addr=$('#index_addr option:selected').val();
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				jsonData=eval("("+xmlhttp.responseText+")");
+				var data="";
+				for(var i=0;i<jsonData.length;i++)
+				{
+					data+="<li><a href='#detail' onclick='aclick("+i+")'>"
+						+ "<img alt='' src="+jsonData[i].photo+">"
+						+ "<label><strong>商品名称："+jsonData[i].name+"</strong></label>"
+						+ "<label>商品介绍："+jsonData[i].introduction+"</label>"
+						+ "<label>商品价格："+jsonData[i].price+"</label></a></li>";
+				}
+				$("#list").html(data);
+				$("#list").listview("refresh"); 
+				
+			}
+		}
+		var data="flag=purchase&find="+find+"&addr="+addr;
+	
+		if(find=="search")
+		{
+			var name=$("#index_search").val();
+			data+="&name="+name;
+		}
+		xmlhttp.open("POST","../servlet/LeaAndPur",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send(data);
+	}
+	function creatXml()
+	{
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		return xmlhttp;
+	}
+	function aclick(i)
+	{
+		id=i;
+		var img1=document.getElementById("detail_img1");
+		var h=document.getElementById("detail_h");
+		var p1=document.getElementById("detail_p1");
+		var p2=document.getElementById("detail_p2");
+		img1.src=jsonData[i].photo;
+		h.innerHTML="商品名称："+jsonData[i].name;
+		p1.innerHTML="商品介绍："+jsonData[i].introduction;
+		p2.innerHTML="商品价格："+jsonData[i].price;
+		
+		var width=window.screen.width;
+		//var height=window.screen.width/3;
+		var imgstyle=document.getElementsByTagName("img");
+		var div=document.getElementById("detail_img");
+		div.style.width=width*5+"px";
+		var i=1;
+		for(i=1;i<imgstyle.length;i++)
+		{
+			imgstyle[i].style.width=width+"px";
+			//imgstyle[i].style.height=height+"px"; 
+			imgstyle[i].style.float="left";
+		} 
+	}
+	function send_news()
+	{
+		var sendnews_data=$("#sendnews_data").val();
+		if(sendnews_data.length!=0)
+		{
+			var xmlhttp=creatXml();
+			xmlhttp.onreadystatechange=function()
+			{
+				if(xmlhttp.readyState==4&&xmlhttp.status==200)
+				{
+					var data=xmlhttp.responseText;
+					alert(data);
+					document.getElementById("sendnews_data").value=null;
+				}
+			}
+			var send_data="flag=purchase_send";
+			send_data+="&sendnews_data="+sendnews_data+"&to_tel="+jsonData[id].seller_tel;
+			xmlhttp.open("POST","../servlet/News",true);
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+			xmlhttp.send(send_data);  
+		}
+		else
+			alert("发送内容不能为空！");  
+	} 
+	//立即购买
+	function purchase_now()
+	{
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=xmlhttp.responseText;
+				alert(data);
+			}
+		}
+		var send_data="action=generate&flag=purchase_now";
+		send_data+="&photo="+jsonData[id].photo+"&name="+jsonData[id].name+"&introduction="+jsonData[id].introduction
+		+"&price="+jsonData[id].price+"&seller_tel="+jsonData[id].seller_tel;
+		xmlhttp.open("POST","../servlet/Order",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send(send_data);  
+	} 
+</script>
+</html>

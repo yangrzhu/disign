@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>个人商品信息</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet"  href="../jquery/jquery.mobile-1.4.5.css">
+	<script src="../jquery/jquery.js"></script>
+	<script src="../jquery/jquery.mobile-1.4.5.js"></script>
+</head>
+<body>
+<!-- 主页面 -->
+<div data-role="page" id="index">
+	<div data-role="header">
+		<p style="text-align:center"><strong id="index_str"></strong></p>
+	</div>
+	<div data-role="main">
+		<div data-role="navbar">
+	    	<ul>
+	     		<li><a href="#" onclick="LeaAndPur('lease')">我要出租</a></li>
+	     		<li><a href="#" onclick="LeaAndPur('purchase')">我要出售</a></li>
+	    	</ul>
+		</div>
+		<div style="width:100%;float:left;" id="index_leasemenu">
+			<div style="width:50%;float:left;">
+	   			<a href="#up_goods" class="ui-btn">出租商品</a>
+	   		</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="我的商品" onclick="MyGoods()">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="收到消息">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="待收货">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	   			<input type="button" value="待发货">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="我的订单">
+	    	</div>
+		</div>
+		<div style="width:100%;float:left;" id="index_purchasemenu">
+			<div style="width:50%;float:left;">
+	   			<a href="#up_goods" class="ui-btn">出售商品</a>
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="我的商品" onclick="MyGoods()">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="收到消息">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="待收货">
+	    	</div>
+	    	<div style="width:50%;float:left;">
+	   			<input type="button" value="待发货">
+	   	 	</div>
+	    	<div style="width:50%;float:left;">
+	    		<input type="button" value="我的订单">
+	    	</div>
+		</div>
+	</div>
+</div>
+<!-- 发布商品 -->
+<div data-role="page" id="up_goods">
+	<div data-role="header">
+		<h3>发布商品</h3>
+	</div>
+	<div data-role="main">
+		<div>
+			<form id="upgoods_img">
+				<input type="file" placeholder="头像" id="upgoods_Img" name="upgoods_Img" accept="image/*"/>
+			</form>		
+			<input type="text" placeholder="商品名称" name="upgoods_name" id="upgoods_name">
+			<input type="text" placeholder="商品介绍" name="upgoods_introduction" id="upgoods_introduction">
+			<input type="text" placeholder="商品价格" name="upgoods_price" id="upgoods_price">
+			<input type="button" value="提交" onclick="UpLoad()"/>
+			<img src="" id="upgoods_myImg" style="width:100%;padding:0;margin:1%;float:left;box-sizing:border-box;">			
+		</div>
+	</div>
+</div>
+<!-- 我的商品 -->
+<div data-role="page" id="my_goods">
+	<div data-role="header">
+		<h3 id="mygoods_h"></h3>
+	</div>
+	<div data-role="main">
+		<div class="ui-field-contain">
+			<ul data-role="listview" data-inset="true" id="mygoods_list">	
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 我的商品详细信息 -->
+<div data-role="page" id="mygoods_detail">	
+	<div data-role="header">
+		<p style="text-align:center"><strong>详细信息</strong></p>
+	</div>
+	<div data-role="main">
+		<div id="mygoodsdetail_img">
+			<img src="" id="mygoodsdetail_img1"/>
+			<img src=""/>
+			<img src=""/>
+			<img src=""/>
+			<img src=""/>
+		</div>
+		<h3 id="mygoodsdetail_h">商品名称：</h3>
+		<p id="mygoodsdetail_p1">商品介绍：</p>
+		<p id="mygoodsdetail_p2">商品价格：</p>
+	</div>
+	<div data-role="footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a data-ajax=false href="#" >重新编辑</a></li>
+				<li><a data-ajax=false class="ui-btn ui-corner-all" data-rel="back">返回</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	var LeaOrPur=null;
+	//加载前执行
+	window.onload=function()
+	{
+		alert("11");
+		LeaOrPur="lease";
+		document.getElementById("index_str").innerHTML="出租";
+		document.getElementById("index_purchasemenu").style.display="none";
+	}
+	$(function(){
+		//预览图片（商品）
+		$("#upgoods_Img").change(function(){	
+			var file=document.getElementById("upgoods_Img").files;		
+			if(file.length!=0)
+			{
+				if(file[0].type==="image/jpg"||file[0].type==="image/png"||file[0].type==="image/jpeg")
+				{
+					var url=window.URL.createObjectURL(file[0]);
+					$("#upgoods_myImg").attr("src",url);
+				}
+				else
+				{
+					alert("文件格式错误");
+				}
+			}
+			else
+			{
+				alert("没有选取到图片")
+			}
+		});
+	});
+	//发布商品
+	function UpLoad()
+	{
+		var file=document.getElementById("upgoods_Img").files;	
+		var upgoods_name=$("#upgoods_name").val();
+		var upgoods_introduction=$("#upgoods_introduction").val();
+		var upgoods_price=$("#upgoods_price").val();
+		if(file.length!=0&&upgoods_name.length!=0&&upgoods_introduction.length!=0&&upgoods_price.length!=0)
+		{
+			//上传图片
+			var formdata=new FormData(document.getElementById("upgoods_img"));
+			formdata.append("flag",LeaOrPur);		
+			var xmlhttp=creatXml();
+			xmlhttp.onreadystatechange=function()
+			{
+				if(xmlhttp.readyState==4&&xmlhttp.status==200)
+				{
+					var xdata=xmlhttp.responseText;
+					document.getElementById("upgoods_Img").value=null;	
+					document.getElementById("upgoods_name").value=null;
+					document.getElementById("upgoods_introduction").value=null;
+					document.getElementById("upgoods_price").value=null;
+					document.getElementById("upgoods_myImg").src=null;
+				}
+			}
+			xmlhttp.open("POST","../servlet/Upload",true);
+			//xmlhttp.setRequestHeader("Content-type", "multipart/form-data"); 
+			xmlhttp.send(formdata);
+			//上传文本	
+			var xmlhttp1=creatXml();
+			xmlhttp1.onreadystatechange=function()
+			{
+				if(xmlhttp1.readyState==4&&xmlhttp1.status==200)
+				{
+					var xdata=xmlhttp1.responseText;
+					alert(xdata);
+				}
+			}
+			var data="";
+			data+="flag="+LeaOrPur+"&name="+upgoods_name+"&introduction="+upgoods_introduction+"&price="+upgoods_price;
+			xmlhttp1.open("POST","../servlet/Product",true);
+			xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xmlhttp1.send(data); 
+		}	
+		else
+		{
+			alert("商品资料还没完成");
+		}
+	}
+	//创建XMLhttpRequest类
+	function creatXml()
+	{
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		return xmlhttp;
+	}
+	//菜单隐藏和显示
+	function LeaAndPur(flag)
+	{
+		LeaOrPur=flag;
+		if(flag=="lease")
+		{
+			document.getElementById("index_purchasemenu").style.display="none";
+			document.getElementById("index_leasemenu").style.display="inline";
+			document.getElementById("index_str").innerHTML="出租";
+		}
+		else
+		{
+			document.getElementById("index_purchasemenu").style.display="inline";
+			document.getElementById("index_leasemenu").style.display="none";
+			document.getElementById("index_str").innerHTML="出售";
+		}
+		
+	}
+	//获取个人商品信息
+	var jsonData;
+	function MyGoods()
+	{
+		window.location.href="#my_goods";
+		if(LeaOrPur=="lease")
+			document.getElementById("mygoods_h").innerHTML="我的出租商品";
+		else
+			document.getElementById("mygoods_h").innerHTML="我的销售商品";
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				jsonData=eval("("+xmlhttp.responseText+")");
+				var data="";
+				for(var i=0;i<jsonData.length;i++)
+				{
+					data+="<li><a href='#mygoods_detail' onclick='aclick("+i+")'>"
+						+ "<img alt='' src="+jsonData[i].photo+">"
+						+ "<label><strong>商品名称："+jsonData[i].name+"</strong></label>"
+						+ "<label>商品介绍："+jsonData[i].introduction+"</label>"
+						+ "<label>商品价格："+jsonData[i].price+"</label></a></li>";
+				}
+				$("#mygoods_list").html(data);
+				$("#mygoods_list").listview("refresh"); 				
+			}
+		}
+		xmlhttp.open("POST","../servlet/Product",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send("flag=mygoods_"+LeaOrPur);	
+	}
+	function aclick(i)
+	{
+		var mygoodsdetail_img1=document.getElementById("mygoodsdetail_img1");
+		var h=document.getElementById("mygoodsdetail_h");
+		var p1=document.getElementById("mygoodsdetail_p1");
+		var p2=document.getElementById("mygoodsdetail_p2");
+		mygoodsdetail_img1.src=jsonData[i].photo;
+		h.innerHTML="商品名称："+jsonData[i].name;
+		p1.innerHTML="商品介绍："+jsonData[i].introduction;
+		p2.innerHTML="商品价格："+jsonData[i].price;
+		
+		var width=window.screen.width;
+		var height=window.screen.width/3;
+		var imgstyle=document.getElementsByTagName("img");
+		var div=document.getElementById("mygoodsdetail_img");
+		div.style.width=width*5+"px";
+		var j=1;
+		for(j=1;j<imgstyle.length;j++)
+		{
+			imgstyle[j].style.width=width+"px";
+			imgstyle[j].style.height=height+"px"; 
+			imgstyle[j].style.float="left";
+		} 
+	}
+</script>
+</html>

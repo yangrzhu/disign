@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>登录</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet"  href="../jquery/jquery.mobile-1.4.5.css">
+	<script src="../jquery/jquery.js"></script>
+	<script src="../jquery/jquery.mobile-1.4.5.js"></script>
+</head>
+
+<body>
+<!-- 登录页面 -->
+<div data-role="page" id="index">
+	<div data-role="header">
+		<img src="../photo/login.jpg" id="login_img"/>
+	</div>
+	<div data-role="main">
+		<form>
+			<div class="ui-field-contain">
+				<input type="tel" id="login_tel" placeholder="手机号码" autocomplete="on" autofocus/>
+			</div>
+			<div>
+				<input type="password" id="login_password" placeholder="密码"/>
+			</div>
+			<input type="button" value="登录" onclick="login()">			
+			<label style="text-align: right"><a  href="#register">没有账号，去注册</a></label>			
+		</form>
+	</div>
+</div>
+<!-- 注册页面 -->
+<div data-role="page" id="register">
+	<div data-role="header">
+		<img src="../photo/login.jpg" id="register_img"/>
+	</div>
+	<div data-role="main">
+		<form data-ajax="false">
+			<div class="ui-field-contain">
+				<input type="tel" id="register_tel" placeholder="手机号码" autocomplete="on" autofocus/>
+			</div>
+			<div>
+				<input type="password" id="register_password" placeholder="密码"/>
+			</div>
+			<div>
+				<input type="password" id="re_password" placeholder="确认密码"/>
+			</div>
+			<div>
+				<input type="button" value="注册" onclick="register()">
+			</div>	
+			<label style="text-align: right"><a  href="#index" >已有账号，去登录</a></label>
+		</form>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	window.onload=function()
+	{
+		var img1=document.getElementById("login_img");
+		var img2=document.getElementById("register_img");
+		img1.style.width=window.screen.width+"px";
+		img1.style.height=window.screen.width/3+"px";
+		img2.style.width=window.screen.width+"px";
+		img2.style.height=window.screen.width/3+"px";
+	}
+</script>
+<script>
+	function login()
+	{
+		var tel=$("#login_tel").val();
+		var pw=$("#login_password").val();
+		if(tel.length==11)
+		{
+			if(pw.length!=0)
+			{
+				var xmlhttp=creatXml();
+				xmlhttp.onreadystatechange=function()
+				{
+					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					{
+						var data=xmlhttp.responseText;
+						if(data.indexOf("success")!=-1)
+						{
+							window.location.href="../filter_html/lease.html";
+						}
+						else if(data.indexOf("error1")!=-1)
+							alert("账号或密码错误");
+						else
+							alert("该账号还没注册");
+					}
+				}
+				var data="flag=login";
+				data+="&tel="+tel+"&password="+pw;
+				xmlhttp.open("POST","../servlet/LogAndReg",true);
+				xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+				xmlhttp.send(data);
+			}
+			else
+			{
+				alert("密码不能为空");
+			}
+		}
+		else
+		{
+			alert("请输入正确的手机号码");
+		}
+	}
+	function register()
+	{
+		var tel=$("#register_tel").val();
+		var pw=$("#register_password").val();
+		var re_pw=$("#re_password").val();
+		if(tel.length==11)
+		{
+			if(pw.length!=0&&pw==re_pw)
+			{
+				var xmlhttp=creatXml();
+				xmlhttp.onreadystatechange=function()
+				{
+					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					{
+						var data=xmlhttp.responseText;
+						if(data.indexOf("success")!=-1)
+						{
+							alert("注册成功，返回登录");
+							window.location.href="index.html";
+						}
+						else
+							alert("该账号已经注册");
+					}
+				}
+				var data="flag=register";
+				data+="&tel="+tel+"&password="+pw;
+				xmlhttp.open("POST","../servlet/LogAndReg",true);
+				xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+				xmlhttp.send(data);
+			}
+			else
+			{
+				alert("密码确认失败，请重新输入密码");
+			}
+		}
+		else
+		{
+			alert("请输入正确的手机号码");
+		}
+	}
+	function creatXml()
+	{
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		return xmlhttp;
+	}
+</script>
+</html>
