@@ -2,7 +2,6 @@ package servlet;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -41,7 +40,7 @@ public class Upload extends HttpServlet {
 		// TODO Auto-generated method stub
 		response.setContentType("text/html;charset=utf-8");
 		response.setCharacterEncoding("utf-8");		
-		PrintWriter out=response.getWriter();
+		request.setCharacterEncoding("utf-8");
 		//为解析类提供配置信息
 		DiskFileItemFactory factory=new DiskFileItemFactory();
 		//创建解析类的实例
@@ -53,98 +52,50 @@ public class Upload extends HttpServlet {
 			items = sfu.parseRequest(request);
 			DataBase mysql=new DataBase();
 			mysql.connect();
+			@SuppressWarnings("deprecation")
+			String projectPath=request.getRealPath("");
+			//String projectPath=request.getContextPath();
+			String pho_name="";
+			if(items.get(0).getSize()!=0)
+			{
+				String fileName=items.get(0).getName();
+				int index=fileName.lastIndexOf(".");
+				pho_name=fileName.substring(0,index)+System.currentTimeMillis()+fileName.substring(index);
+				String path=projectPath+"\\photo\\"+pho_name;
+				FileOutputStream output=new FileOutputStream(path);
+				output.write(items.get(0).get());
+				output.flush();
+				output.close();
+			}
+			String sql;
 			if(items.get(items.size()-3).getString().equals("information"))
 			{
-				@SuppressWarnings("deprecation")
-				String projectPath=request.getRealPath("");
-				//String projectPath=request.getContextPath();
-				String fileName=items.get(0).getName();
-				int index=fileName.lastIndexOf(".");
-				String pho_name=fileName.substring(0,index)+System.currentTimeMillis()+fileName.substring(index);
-				String path=projectPath+"\\photo\\"+pho_name;
-				System.out.println(path);
-				FileOutputStream output=new FileOutputStream(path);
-				output.write(items.get(0).get());
-				output.flush();
-				output.close();
-				String sql="update user set photo='../photo/"+pho_name+"' where tel='"+request.getSession().getAttribute("user")+"'";
-				mysql.sqlUpdate(sql);
-				out.write("编辑成功");
+				if(items.get(0).getSize()==0)
+					sql="update user set photo=null where tel='"+request.getSession().getAttribute("user")+"'";
+				else
+				{
+					sql="update user set photo='../photo/"+pho_name+"' where tel='"+request.getSession().getAttribute("user")+"'";
+				}
 			}
-			if(items.get(items.size()-3).getString().equals("lease"))
+			else if(items.get(items.size()-3).getString().equals("lease"))
 			{
-				@SuppressWarnings("deprecation")
-				String projectPath=request.getRealPath("");
-				//String projectPath=request.getContextPath();
-				String fileName=items.get(0).getName();
-				int index=fileName.lastIndexOf(".");
-				String pho_name=fileName.substring(0,index)+System.currentTimeMillis()+fileName.substring(index);
-				String path=projectPath+"\\photo\\"+pho_name;
-				System.out.println(path);
-				FileOutputStream output=new FileOutputStream(path);
-				output.write(items.get(0).get());
-				output.flush();
-				output.close();
-				String sql;
 				if(items.get(items.size()-2).getString().equals("0"))
 					sql="update lease_table set photo='../photo/"+pho_name+"',seller_tel='"+request.getSession().getAttribute("user")
-						+"' where id='"+request.getSession().getAttribute("id")+"'";
+						+"' where seller_tel='1'";
 				else
 					sql="update lease_table set photo='../photo/"+pho_name+"' where id="+items.get(items.size()-1).getString();
-				mysql.sqlUpdate(sql);
 			}
-			if(items.get(items.size()-3).getString().equals("purchase"))
+			else
 			{
-				@SuppressWarnings("deprecation")
-				String projectPath=request.getRealPath("");
-				//String projectPath=request.getContextPath();
-				String fileName=items.get(0).getName();
-				int index=fileName.lastIndexOf(".");
-				String pho_name=fileName.substring(0,index)+System.currentTimeMillis()+fileName.substring(index);
-				String path=projectPath+"\\photo\\"+pho_name;
-				System.out.println(path);
-				FileOutputStream output=new FileOutputStream(path);
-				output.write(items.get(0).get());
-				output.flush();
-				output.close();
-				String sql;
 				if(items.get(items.size()-2).getString().equals("0"))
 					sql="update purchase_table set photo='../photo/"+pho_name+"',seller_tel='"+request.getSession().getAttribute("user")
-				+"' where id='"+request.getSession().getAttribute("id")+"'";
+				+"' where seller_tel='1'";
 				else
 					sql="update purchase_table set photo='../photo/"+pho_name+"' where id="+items.get(items.size()-1).getString();
-				mysql.sqlUpdate(sql);
 			}
-			/*//区分表单域
-			for(int i=0;i<items.size();i++)
-			{
-				FileItem item=items.get(i);
-				//ifFormFile为true，表示这不是文件上传表单域
-				//文件上传域			
-				if(!item.isFormField())
-				{
-					System.out.println("文件文本：");
-					@SuppressWarnings("deprecation")
-					String projectPath=request.getRealPath("");
-					//String projectPath=request.getContextPath();
-					String fileName=item.getName();
-					int index=fileName.lastIndexOf(".");
-					String path=projectPath+"\\photo\\"+fileName.substring(0,index)+System.currentTimeMillis()+fileName.substring(index);
-					System.out.println(path);
-					FileOutputStream output=new FileOutputStream(path);
-					output.write(item.get());
-					output.flush();
-					output.close();
-					item.delete();
-					out.write("上传成功");
-				}
-				//普通表单域
-				else
-				{
-					System.out.println("普通文本：");
-					System.out.println(item.getFieldName()+"  "+item.getString());
-				}
-			}*/
+			System.out.println(sql);
+			mysql.sqlUpdate("SET SQL_SAFE_UPDATES = 0");
+			System.out.println(mysql.sqlUpdate(sql));
 		} catch (FileUploadException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

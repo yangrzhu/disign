@@ -86,7 +86,7 @@ public class Order extends HttpServlet {
 		{
 			SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			if(request.getParameter("flag").equals("lease_now"))
-			{
+			{		
 				sql="insert into lease_order (photo,name,introduction,price,buyer_tel,seller_tel,time) values('"
 				+request.getParameter("photo")+"','"+request.getParameter("name")+"','"+request.getParameter("introduction")
 				+"','"+request.getParameter("price")+"','"+request.getSession().getAttribute("user")+"','"+request.getParameter("seller_tel")
@@ -95,19 +95,45 @@ public class Order extends HttpServlet {
 			}
 			else if(request.getParameter("flag").equals("purchase_now"))
 			{
-				sql="insert into purchase_order (photo,name,introduction,price,buyer_tel,seller_tel,time) values('"
+				try {
+					mysql.sqlUpdate("update purchase_table set time='"+dateformat.format(new Date())+"' where id="+request.getParameter("goods_id"));
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				sql="insert into purchase_order (photo,name,introduction,price,buyer_tel,seller_tel,time,goods_id) values('"
 				+request.getParameter("photo")+"','"+request.getParameter("name")+"','"+request.getParameter("introduction")
 				+"','"+request.getParameter("price")+"','"+request.getSession().getAttribute("user")+"','"+request.getParameter("seller_tel")
-				+"','"+dateformat.format(new Date())+"')";
+				+"','"+dateformat.format(new Date())+"',"+request.getParameter("goods_id")+")";
 				out.write("下单成功，等待处理");
 			}
 			else if(request.getParameter("flag").equals("purchase_verify"))
 			{
+				if(request.getParameter("verify").equals("1"))
+				{
+					try {
+						mysql.sqlQuery("select * from purchase_order where id="+request.getParameter("id"));
+						if(mysql.getRs().next())
+							mysql.sqlUpdate("update purchase_table set number=number-1 where id="+mysql.getRs().getString("goods_id"));
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 				sql="update purchase_order set verify="+request.getParameter("verify")+",buyer_delete=0,seller_delete=0 where id="+request.getParameter("id");
 				out.write("处理成功");
 			}
 			else
 			{
+				if(request.getParameter("verify").equals("1"))
+				{
+					try {
+						mysql.sqlUpdate("update lease_table set frequency=frequency+1,time='"+dateformat.format(new Date())+"' where id="+request.getParameter("goods_id"));
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}		
 				sql="update lease_order set verify="+request.getParameter("verify")+",buyer_delete=0,seller_delete=0 where id="+request.getParameter("id");
 				System.out.println(sql);
 				out.write("处理成功");

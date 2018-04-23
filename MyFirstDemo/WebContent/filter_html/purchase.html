@@ -28,15 +28,30 @@
 		<p style="text-align:center"><strong>出售信息</strong></p>
 	</div>
 	<div data-role="main">
-		<fieldset data-role="fieldcontain">
+		<div data-role="navbar">
+			<ul>
+				<li>
+					<div class="select" style="margin-top:10%;box-sizing:border-box;">
+    					<select name="index_addr" id="index_addr" onchange="search('onload')">
+			      			<option value="后海校区">后海校区</option>
+			      			<option value="南校区">南校区</option>
+			      			<option value="西丽校区">西丽校区</option>
+			    		</select>
+ 					</div>
+				</li>
+				<li><a data-ajax=false id="price_order" onclick="order('price')" href="" style="margin-top:10%;box-sizing:border-box;">价格</a></li>
+				<li><a data-ajax=false id="time_order" onclick="order('time')" href="" style="margin-top:10%;box-sizing:border-box;">时间</a></li>
+			</ul>
+		</div>
+		<!-- <fieldset data-role="fieldcontain">
     		<label for="day">选择地址：</label>
     		<select name="index_addr" id="index_addr" onchange="search('onload')">
       			<option value="后海校区">后海校区</option>
       			<option value="南校区">南校区</option>
       			<option value="西丽校区">西丽校区</option>
     		</select>
- 		</fieldset>
-		<input type="search" placeholder="请输入搜索内容" onkeypress="search('search')" onkeydown="search('search')" id="index_search">
+ 		</fieldset> -->
+		<input type="search" placeholder="请输入搜索内容" onkeypress="search()" onkeydown="search()" id="index_search">
 		<div class="ui-field-contain">
 			<ul data-role="listview" data-inset="true" id="list"></ul>
 		</div>
@@ -44,9 +59,9 @@
 	<div data-role="footer" data-position="fixed">
 		<div data-role="navbar">
 			<ul>
-				<li><a data-ajax=false href="lease.html" data-icon="camera">租赁</a></li>
-				<li><a data-ajax=false href="purchase.html" data-icon="carat-l">出售</a></li>
-				<li><a data-ajax=false href="imformation.html" data-icon="carat-r">个人中心 </a></li>
+				<li><a data-ajax=false href="lease.html" data-icon="carat-l">租赁</a></li>
+				<li><a data-ajax=false href="purchase.html" data-icon="carat-r">购买</a></li>
+				<li><a data-ajax=false href="imformation.html" data-icon="home">个人中心 </a></li>
 			</ul>
 		</div>
 		</div>
@@ -64,9 +79,10 @@
 			<img src=""/>
 			<img src=""/>
 		</div>
-		<h3 id="detail_h">商品名称：</h3>
-		<p id="detail_p1">商品介绍：</p>
-		<p id="detail_p2">商品价格：</p>
+		<h3 id="detail_name">商品名称：</h3>
+		<p id="detail_introduction">商品介绍：</p>
+		<p id="detail_price">商品价格：</p>
+		<p id="detail_addr">交易地址：</p>
 	</div>
 	<div data-role="footer">
 	<div data-role="navbar">
@@ -93,14 +109,17 @@
 </body>
 <script type="text/javascript">
 	var jsonData;
-	var id=0;
+	var id=0,price_order=0,time_order=0;
+	var choose_order="time";
 	window.onload=function()
 	{
-		search("onload");
+		search();
 	}
-	function search(find)
+	//获取商品数据
+	function search()
 	{
 		var addr=$('#index_addr option:selected').val();
+		var name=$("#index_search").val();
 		var xmlhttp=creatXml();
 		xmlhttp.onreadystatechange=function()
 		{
@@ -108,26 +127,21 @@
 			{
 				jsonData=eval("("+xmlhttp.responseText+")");
 				var data="";
-				for(var i=0;i<jsonData.length;i++)
+				for(var i=jsonData.length-1;i>=0;i--)
 				{
 					data+="<li><a href='#detail' onclick='aclick("+i+")'>"
 						+ "<img alt='' src="+jsonData[i].photo+">"
 						+ "<label><strong>商品名称："+jsonData[i].name+"</strong></label>"
 						+ "<label>商品介绍："+jsonData[i].introduction+"</label>"
-						+ "<label>商品价格："+jsonData[i].price+"</label></a></li>";
+						+ "<label>商品价格："+jsonData[i].price+"元</label></a></li>";
 				}
 				$("#list").html(data);
 				$("#list").listview("refresh"); 
-				
+				 
 			}
 		}
-		var data="flag=purchase&find="+find+"&addr="+addr;
-	
-		if(find=="search")
-		{
-			var name=$("#index_search").val();
-			data+="&name="+name;
-		}
+		var data="flag=purchase&addr="+addr+"&name="+name+"&price_order="+price_order
+		+"&time_order="+time_order+"&choose_order="+choose_order;
 		xmlhttp.open("POST","../servlet/LeaAndPur",true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
 		xmlhttp.send(data);
@@ -147,17 +161,20 @@
 		}
 		return xmlhttp;
 	}
+	//商品点击事件
 	function aclick(i)
 	{
 		id=i;
 		var img1=document.getElementById("detail_img1");
-		var h=document.getElementById("detail_h");
-		var p1=document.getElementById("detail_p1");
-		var p2=document.getElementById("detail_p2");
+		var name=document.getElementById("detail_name");
+		var introduction=document.getElementById("detail_introduction");
+		var price=document.getElementById("detail_price");
+		var addr=document.getElementById("detail_addr");
 		img1.src=jsonData[i].photo;
-		h.innerHTML="商品名称："+jsonData[i].name;
-		p1.innerHTML="商品介绍："+jsonData[i].introduction;
-		p2.innerHTML="商品价格："+jsonData[i].price;
+		name.innerHTML="商品名称："+jsonData[i].name;
+		introduction.innerHTML="商品介绍："+jsonData[i].introduction;
+		price.innerHTML="商品价格："+jsonData[i].price+"元";
+		addr.innerHTML="交易地址："+jsonData[i].addr;
 		
 		var width=window.screen.width;
 		//var height=window.screen.width/3;
@@ -172,6 +189,7 @@
 			imgstyle[i].style.float="left";
 		} 
 	}
+	//发送信息
 	function send_news()
 	{
 		var sendnews_data=$("#sendnews_data").val();
@@ -210,10 +228,37 @@
 		}
 		var send_data="action=generate&flag=purchase_now";
 		send_data+="&photo="+jsonData[id].photo+"&name="+jsonData[id].name+"&introduction="+jsonData[id].introduction
-		+"&price="+jsonData[id].price+"&seller_tel="+jsonData[id].seller_tel;
+		+"&price="+jsonData[id].price+"&seller_tel="+jsonData[id].seller_tel+"&goods_id="+jsonData[id].id;
 		xmlhttp.open("POST","../servlet/Order",true);
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
 		xmlhttp.send(send_data);  
 	} 
+	//按价格、事件排序
+	function order(search_order)
+	{
+		if(search_order=="price")
+		{
+			choose_order="price";
+			price_order=++price_order%3;
+			if(price_order==0)
+				document.getElementById("price_order").innerHTML="价格";
+			else if(price_order==1)
+				document.getElementById("price_order").innerHTML="价格↑";
+			else if(price_order==2)
+				document.getElementById("price_order").innerHTML="价格↓";
+		}
+		else if(search_order=="time")
+		{
+			choose_order="time";
+			time_order=++time_order%3;
+			if(time_order==0)
+				document.getElementById("time_order").innerHTML="时间";
+			else if(time_order==1)
+				document.getElementById("time_order").innerHTML="时间↑";
+			else if(time_order==2)
+				document.getElementById("time_order").innerHTML="时间↓";
+		}
+		search();
+	}
 </script>
 </html>

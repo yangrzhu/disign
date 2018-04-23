@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>更新商品信息</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="stylesheet"  href="../jquery/jquery.mobile-1.4.5.css">
+	<script src="../jquery/jquery.js"></script>
+	<script src="../jquery/jquery.mobile-1.4.5.js"></script>
+</head>
+<body>
+	<div data-role="header">
+		<p style="text-align:center"><strong>更新商品信息</strong></p>
+	</div>
+	<div data-role="main">
+		<input type="button" value="更新商品信息" onclick="update()">
+	</div>
+</body>
+<script>
+	function update()
+	{
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=xmlhttp.responseText;
+				alert(data);		
+			}
+		}
+		xmlhttp.open("POST","../servlet/Update",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send();
+	}
+	function creatXml()
+	{
+		var xmlhttp;
+		if (window.XMLHttpRequest)
+		{
+			// IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+			xmlhttp=new XMLHttpRequest();
+		}
+		else
+		{
+			// IE6, IE5 浏览器执行代码
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		return xmlhttp;
+	}
+</script>
+</html>

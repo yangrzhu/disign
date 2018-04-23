@@ -23,42 +23,42 @@
 		</div>
 		<div style="width:100%;float:left;" id="index_leasemenu">
 			<div style="width:50%;float:left;">
-	   			<a href="#up_goods" class="ui-btn">出租商品</a>
+	   			<a href="#up_goods" class="ui-btn" onclick="up_goods()">出租商品</a>
 	   		</div>
 	    	<div style="width:50%;float:left;">
 	    		<input type="button" value="我的商品" onclick="MyGoods()">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="收到消息">
+	    		<input type="button" value="我的消息" onclick="MyNews()">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="待收货">
+	    		<input type="button" value="待收货" onclick="MyOrder('get')">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	   			<input type="button" value="待发货">
+	   			<input type="button" value="待发货" onclick="MyOrder('give')">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="我的订单">
+	    		<input type="button" value="我的订单" onclick="MyOrder('over')">
 	    	</div>
 		</div>
 		<div style="width:100%;float:left;" id="index_purchasemenu">
 			<div style="width:50%;float:left;">
-	   			<a href="#up_goods" class="ui-btn">出售商品</a>
+	   			<a href="#up_goods" class="ui-btn" onclick="up_goods()">出售商品</a>
 	    	</div>
 	    	<div style="width:50%;float:left;">
 	    		<input type="button" value="我的商品" onclick="MyGoods()">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="收到消息">
+	    		<input type="button" value="我的消息" onclick="MyNews()">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="待收货">
+	    		<input type="button" value="待收货" onclick="MyOrder('get')">
 	    	</div>
 	    	<div style="width:50%;float:left;">
-	   			<input type="button" value="待发货">
+	   			<input type="button" value="待发货" onclick="MyOrder('give')">
 	   	 	</div>
 	    	<div style="width:50%;float:left;">
-	    		<input type="button" value="我的订单">
+	    		<input type="button" value="我的订单" onclick="MyOrder('over')">
 	    	</div>
 		</div>
 	</div>
@@ -75,7 +75,15 @@
 			</form>		
 			<input type="text" placeholder="商品名称" name="upgoods_name" id="upgoods_name">
 			<input type="text" placeholder="商品介绍" name="upgoods_introduction" id="upgoods_introduction">
-			<input type="text" placeholder="商品价格" name="upgoods_price" id="upgoods_price">
+			<input type="text" placeholder="商品价格(_元/天)" name="upgoods_price" id="upgoods_price"/>
+			<fieldset data-role="fieldcontain">
+    			<label for="day">选择地址：</label>
+    			<select name="upgoods_addr" id="upgoods_addr">
+      				<option value="后海校区">后海校区</option>
+      				<option value="南校区">南校区</option>
+      				<option value="西丽校区">西丽校区</option>
+    			</select>
+ 			</fieldset>
 			<input type="button" value="提交" onclick="UpLoad()"/>
 			<img src="" id="upgoods_myImg" style="width:100%;padding:0;margin:1%;float:left;box-sizing:border-box;">			
 		</div>
@@ -106,16 +114,82 @@
 			<img src=""/>
 			<img src=""/>
 		</div>
-		<h3 id="mygoodsdetail_h">商品名称：</h3>
-		<p id="mygoodsdetail_p1">商品介绍：</p>
-		<p id="mygoodsdetail_p2">商品价格：</p>
+		<h3 id="mygoodsdetail_name">商品名称：</h3>
+		<p id="mygoodsdetail_introduction">商品介绍：</p>
+		<p id="mygoodsdetail_price">商品价格：</p>
+		<p id="mygoodsdetail_addr">交易地址：</p>
+		<p id="mygoodsdetail_status">状态：</p>
 	</div>
 	<div data-role="footer">
 		<div data-role="navbar">
 			<ul>
-				<li><a data-ajax=false href="#" >重新编辑</a></li>
-				<li><a data-ajax=false class="ui-btn ui-corner-all" data-rel="back">返回</a></li>
+				<li><a data-ajax=false href="#up_goods" onclick="re_edit()">重新编辑</a></li>
+				<li><a data-ajax=false href="#" onclick="delete_mygoods()">删除</a></li>
 			</ul>
+		</div>
+	</div>
+</div>
+<!-- 我的订单 -->
+<div data-role="page" id="my_order">
+	<div data-role="header">
+		<h3 id="myorder_h"></h3>
+	</div>
+	<div data-role="main">
+		<div class="ui-field-contain">
+			<ul data-role="listview" data-inset="true" id="myorder_list">	
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 我的订单详细信息 -->
+<div data-role="page" id="myorder_detail">	
+	<div data-role="header">
+		<p style="text-align:center"><strong>详细信息</strong></p>
+	</div>
+	<div data-role="main">
+		<p id="myorderdetail_id">订单编号：</p>
+		<img src="" id="myorderdetail_img"/>
+		<h3 id="myorderdetail_h">商品名称：</h3>
+		<p id="myorderdetail_p1">商品介绍：</p>
+		<p id="myorderdetail_p2">商品价格：</p>
+		<p id="myorderdetail_time">订单时间：</p>
+		<p id="myorderdetail_status">订单状态：</p>
+		<div id="myorderdetail_delete">
+			<input type="button" value="删除" onclick="delete_myorder()">
+		</div>
+		<div data-role="navbar" id="myorderdetail_navbar">
+			<ul>
+				<li><a data-ajax=false href="#" onclick="verify(1)">同意</a></li>
+				<li><a data-ajax=false href="#" onclick="verify(0)">拒绝</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 我的消息 -->
+<div data-role="page" id="my_news">	
+	<div data-role="header">
+		<p style="text-align:center"><strong>我的消息</strong></p>
+	</div>
+	<div data-role="main">
+		<p id="mynews_t">from：</p>
+		<p id="mynews_m"></p>
+		<div data-role="navbar" id="mynews_navbar">
+			<ul>
+				<li><a href="#send_news" class="ui-btn">回复</a></li>
+				<li><a data-ajax=false href="#" onclick="delete_mynews()">删除</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!-- 回复消息 -->
+<div data-role="page" id="send_news">
+	<div data-role="header">
+		<h3>发送消息</h3>
+	</div>
+	<div data-role="main">
+		<div>	
+			<input type="text" placeholder="请输入发送消息内容" id="sendnews_data">
+			<input type="button" value="发送" onclick="send_news()"/>			
 		</div>
 	</div>
 </div>
@@ -124,11 +198,11 @@
 	var LeaOrPur=null;
 	//加载前执行
 	window.onload=function()
-	{
-		alert("11");
+	{ 
 		LeaOrPur="lease";
-		document.getElementById("index_str").innerHTML="出租";
+		document.getElementById("index_str").innerHTML="我要出租";
 		document.getElementById("index_purchasemenu").style.display="none";
+		document.getElementById("upgoods_price").placeholder="商品价格（元/天）";
 	}
 	$(function(){
 		//预览图片（商品）
@@ -152,6 +226,36 @@
 			}
 		});
 	});
+	//重新编辑商品资料
+	var isRe_edit=0,reEdit_id=-1;
+	function re_edit()
+	{
+		isRe_edit=1;
+	}
+	//发布新的商品资料
+	function up_goods()
+	{
+		isRe_edit=0;
+	}
+	//删除商品
+	function delete_mygoods()
+	{
+		isRe_edit=2;
+		var xmlhttp1=creatXml();
+		xmlhttp1.onreadystatechange=function()
+		{
+			if(xmlhttp1.readyState==4&&xmlhttp1.status==200)
+			{
+				var xdata=xmlhttp1.responseText;
+				alert(xdata);
+			}
+		}
+		var data="";
+		data+="flag="+LeaOrPur+"&isRe_edit="+isRe_edit+"&reEdit_id="+jsonData[reEdit_id].id;
+		xmlhttp1.open("POST","../servlet/Product",true);
+		xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp1.send(data); 
+	}
 	//发布商品
 	function UpLoad()
 	{
@@ -159,46 +263,64 @@
 		var upgoods_name=$("#upgoods_name").val();
 		var upgoods_introduction=$("#upgoods_introduction").val();
 		var upgoods_price=$("#upgoods_price").val();
-		if(file.length!=0&&upgoods_name.length!=0&&upgoods_introduction.length!=0&&upgoods_price.length!=0)
+		var addr=$('#upgoods_addr option:selected').val();
+		if(!isNaN(upgoods_price))
 		{
-			//上传图片
-			var formdata=new FormData(document.getElementById("upgoods_img"));
-			formdata.append("flag",LeaOrPur);		
-			var xmlhttp=creatXml();
-			xmlhttp.onreadystatechange=function()
+			if(file.length!=0&&upgoods_name.length!=0&&upgoods_introduction.length!=0&&upgoods_price.length!=0)
 			{
-				if(xmlhttp.readyState==4&&xmlhttp.status==200)
+				//上传图片
+				var formdata=new FormData(document.getElementById("upgoods_img"));
+				formdata.append("flag",LeaOrPur);
+				formdata.append("isRe_edit",isRe_edit);
+				if(reEdit_id!=-1)
+					formdata.append("reEdit_id",jsonData[reEdit_id].id);
+				else
+					formdata.append("reEdit_id","1");
+				var xmlhttp=creatXml();
+				xmlhttp.onreadystatechange=function()
 				{
-					var xdata=xmlhttp.responseText;
-					document.getElementById("upgoods_Img").value=null;	
-					document.getElementById("upgoods_name").value=null;
-					document.getElementById("upgoods_introduction").value=null;
-					document.getElementById("upgoods_price").value=null;
-					document.getElementById("upgoods_myImg").src=null;
+					if(xmlhttp.readyState==4&&xmlhttp.status==200)
+					{
+						var xdata=xmlhttp.responseText;
+						document.getElementById("upgoods_Img").value=null;	
+						document.getElementById("upgoods_name").value=null;
+						document.getElementById("upgoods_introduction").value=null;
+						document.getElementById("upgoods_price").value=null;
+						$("#upgoods_myImg").attr("src",null);
+					}
 				}
-			}
-			xmlhttp.open("POST","../servlet/Upload",true);
-			//xmlhttp.setRequestHeader("Content-type", "multipart/form-data"); 
-			xmlhttp.send(formdata);
-			//上传文本	
-			var xmlhttp1=creatXml();
-			xmlhttp1.onreadystatechange=function()
+				xmlhttp.open("POST","../servlet/Upload",true);
+				//xmlhttp.setRequestHeader("Content-type", "multipart/form-data"); 
+				xmlhttp.send(formdata);
+				//上传文本	
+				var xmlhttp1=creatXml();
+				xmlhttp1.onreadystatechange=function()
+				{
+					if(xmlhttp1.readyState==4&&xmlhttp1.status==200)
+					{
+						var xdata=xmlhttp1.responseText;
+						alert(xdata);
+					}
+				}
+				var data="";
+				data+="flag="+LeaOrPur+"&name="+upgoods_name+"&introduction="+upgoods_introduction+"&price="+upgoods_price
+				+"&isRe_edit="+isRe_edit+"&addr="+addr;
+				if(reEdit_id!=-1)
+					data+="&reEdit_id="+jsonData[reEdit_id].id;
+				else
+					data+="&reEdit_id=1";
+				xmlhttp1.open("POST","../servlet/Product",true);
+				xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xmlhttp1.send(data); 
+			}	
+			else
 			{
-				if(xmlhttp1.readyState==4&&xmlhttp1.status==200)
-				{
-					var xdata=xmlhttp1.responseText;
-					alert(xdata);
-				}
+				alert("商品资料还没完成");
 			}
-			var data="";
-			data+="flag="+LeaOrPur+"&name="+upgoods_name+"&introduction="+upgoods_introduction+"&price="+upgoods_price;
-			xmlhttp1.open("POST","../servlet/Product",true);
-			xmlhttp1.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-			xmlhttp1.send(data); 
-		}	
+		}
 		else
 		{
-			alert("商品资料还没完成");
+			alert("商品价格只能为数字类型");
 		}
 	}
 	//创建XMLhttpRequest类
@@ -225,18 +347,21 @@
 		{
 			document.getElementById("index_purchasemenu").style.display="none";
 			document.getElementById("index_leasemenu").style.display="inline";
-			document.getElementById("index_str").innerHTML="出租";
+			document.getElementById("index_str").innerHTML="我要出租";
+			document.getElementById("upgoods_price").placeholder="商品价格（元/天）";
 		}
 		else
 		{
 			document.getElementById("index_purchasemenu").style.display="inline";
 			document.getElementById("index_leasemenu").style.display="none";
-			document.getElementById("index_str").innerHTML="出售";
+			document.getElementById("index_str").innerHTML="我要出售";
+			document.getElementById("upgoods_price").placeholder="商品价格（元）";
 		}
 		
 	}
-	//获取个人商品信息
 	var jsonData;
+	var news_id=0;
+	//我的商品
 	function MyGoods()
 	{
 		window.location.href="#my_goods";
@@ -251,13 +376,16 @@
 			{
 				jsonData=eval("("+xmlhttp.responseText+")");
 				var data="";
-				for(var i=0;i<jsonData.length;i++)
+				for(var i=jsonData.length-1;i>=0;i--)
 				{
-					data+="<li><a href='#mygoods_detail' onclick='aclick("+i+")'>"
+					data+="<li><a href='#mygoods_detail' onclick='MyGoods_click("+i+")'>"
 						+ "<img alt='' src="+jsonData[i].photo+">"
 						+ "<label><strong>商品名称："+jsonData[i].name+"</strong></label>"
-						+ "<label>商品介绍："+jsonData[i].introduction+"</label>"
-						+ "<label>商品价格："+jsonData[i].price+"</label></a></li>";
+						+ "<label>商品介绍："+jsonData[i].introduction+"</label>";
+						if(LeaOrPur=="lease")
+							data+="<label>商品价格："+jsonData[i].price+"元\/天</label></a></li>";
+						else
+							data+="<label>商品价格："+jsonData[i].price+"元</label></a></li>";
 				}
 				$("#mygoods_list").html(data);
 				$("#mygoods_list").listview("refresh"); 				
@@ -267,19 +395,35 @@
 		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
 		xmlhttp.send("flag=mygoods_"+LeaOrPur);	
 	}
-	function aclick(i)
+	//商品列表点击事件
+	function MyGoods_click(i)
 	{
+		reEdit_id=i;
 		var mygoodsdetail_img1=document.getElementById("mygoodsdetail_img1");
-		var h=document.getElementById("mygoodsdetail_h");
-		var p1=document.getElementById("mygoodsdetail_p1");
-		var p2=document.getElementById("mygoodsdetail_p2");
+		var name=document.getElementById("mygoodsdetail_name");
+		var introduction=document.getElementById("mygoodsdetail_introduction");
+		var price=document.getElementById("mygoodsdetail_price");
+		var addr=document.getElementById("mygoodsdetail_addr");
 		mygoodsdetail_img1.src=jsonData[i].photo;
-		h.innerHTML="商品名称："+jsonData[i].name;
-		p1.innerHTML="商品介绍："+jsonData[i].introduction;
-		p2.innerHTML="商品价格："+jsonData[i].price;
+		name.innerHTML="商品名称："+jsonData[i].name;
+		introduction.innerHTML="商品介绍："+jsonData[i].introduction;
+		if(LeaOrPur=="lease")
+			price.innerHTML="商品价格："+jsonData[i].price+"元\/天";
+		else
+			price.innerHTML="商品价格："+jsonData[i].price+"元";
+		addr.innerHTML="交易地址："+jsonData[i].addr;
+		if(LeaOrPur=="lease")
+			document.getElementById("mygoodsdetail_status").innerHTML="商品状态：已完成"+jsonData[i].frequency+"次交易";
+		else
+		{
+			if(jsonData[i].frequency>0)
+				document.getElementById("mygoodsdetail_status").innerHTML="商品状态：待出售";
+			else
+				document.getElementById("mygoodsdetail_status").innerHTML="商品状态：已出售";
+		}
 		
 		var width=window.screen.width;
-		var height=window.screen.width/3;
+		//var height=window.screen.width/3;
 		var imgstyle=document.getElementsByTagName("img");
 		var div=document.getElementById("mygoodsdetail_img");
 		div.style.width=width*5+"px";
@@ -287,9 +431,202 @@
 		for(j=1;j<imgstyle.length;j++)
 		{
 			imgstyle[j].style.width=width+"px";
-			imgstyle[j].style.height=height+"px"; 
+			//imgstyle[j].style.height=height+"px"; 
 			imgstyle[j].style.float="left";
 		} 
+	}
+	//我的订单
+	var sta="";
+	function MyOrder(status)
+	{
+		sta=status;
+		window.location.href="#my_order";
+		if(LeaOrPur=="lease")
+			document.getElementById("myorder_h").innerHTML="租赁订单";
+		else
+			document.getElementById("myorder_h").innerHTML="销售订单";
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				jsonData=eval("("+xmlhttp.responseText+")");
+				var data="";
+				for(var i=jsonData.length-1;i>=0;i--)
+				{
+					data+="<li><a href='#myorder_detail' onclick='MyOrder_click("+i+")'>"						
+						+ "<img alt='' src="+jsonData[i].photo+">"
+						+ "<label><strong>订单编号："+jsonData[i].id+"</strong></label>"
+						+ "<label><strong>商品名称："+jsonData[i].name+"</strong></label>"
+						+ "<label>商品介绍："+jsonData[i].introduction+"</label>";
+						if(LeaOrPur=="lease")
+							data+="<label>商品价格："+jsonData[i].price+"元\/天</label>"
+						else
+							data+="<label>商品价格："+jsonData[i].price+"元</label>"
+						data+= "<label>完成时间："+jsonData[i].time+"</label></a></li>";
+				}
+				$("#myorder_list").html(data);
+				$("#myorder_list").listview("refresh"); 				
+			}
+		}
+		xmlhttp.open("POST","../servlet/Order",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send("action=get&flag="+LeaOrPur+status);	
+	}
+	//订单列表点击事件
+	function MyOrder_click(i)
+	{
+		news_id=i;
+		var mygoodsdetail_img=document.getElementById("myorderdetail_img");
+		var h=document.getElementById("myorderdetail_h");
+		var p1=document.getElementById("myorderdetail_p1");
+		var p2=document.getElementById("myorderdetail_p2");
+		var id=document.getElementById("myorderdetail_id");
+		var time=document.getElementById("myorderdetail_time");
+		mygoodsdetail_img.src=jsonData[i].photo;
+		id.innerHTML="订单编号："+jsonData[i].id;
+		h.innerHTML="商品名称："+jsonData[i].name;
+		p1.innerHTML="商品介绍："+jsonData[i].introduction;
+		if(LeaOrPur=="lease")
+			p2.innerHTML="商品价格："+jsonData[i].price+"元\/天";
+		else
+			p2.innerHTML="商品价格："+jsonData[i].price+"元\/天";
+		time.innerHTML="订单时间："+jsonData[i].time;
+		var width=window.screen.width;
+		//var height=window.screen.width/3;
+		mygoodsdetail_img.style.width=width+"px";
+		//mygoodsdetail_img.style.height=height+"px"; 
+		if(jsonData[i].verify=="1")
+			document.getElementById("myorderdetail_status").innerHTML="订单状态：已同意"
+		else if(jsonData[i].verify=="0")
+			document.getElementById("myorderdetail_status").innerHTML="订单状态：已拒绝"
+		else
+			document.getElementById("myorderdetail_status").innerHTML="订单状态：未处理"
+		if(sta!="give")
+		{
+			document.getElementById("myorderdetail_navbar").style.display="none";
+		}
+		else
+			document.getElementById("myorderdetail_navbar").style.display="inline";
+		if(sta!="over")
+		{
+			document.getElementById("myorderdetail_delete").style.display="none";
+		}
+		else
+			document.getElementById("myorderdetail_delete").style.display="inline";
+	}
+	//删除订单
+	function delete_myorder()
+	{
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=xmlhttp.responseText;
+				alert(data);
+			}
+		}
+		xmlhttp.open("POST","../servlet/Order",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send("action=delete&flag="+LeaOrPur+"&id="+jsonData[news_id].id);	
+	}
+	//我的消息
+	function MyNews()
+	{
+		window.location.href="#my_order";
+		if(LeaOrPur=="lease")
+			document.getElementById("myorder_h").innerHTML="租赁消息";
+		else
+			document.getElementById("myorder_h").innerHTML="销售消息";
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				jsonData=eval("("+xmlhttp.responseText+")");
+				var data="";
+				for(var i=jsonData.length-1;i>=0;i--)
+				{
+					data+="<li><a href='#my_news' onclick='MyNews_click("+i+")'>"
+						+ "<label>from："+jsonData[i].from_tel+"</label>"
+						+ "<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+jsonData[i].data+"</label></a></li>";
+				}
+				$("#myorder_list").html(data);
+				$("#myorder_list").listview("refresh"); 				
+			}
+		}
+		xmlhttp.open("POST","../servlet/News",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send("flag="+LeaOrPur);	
+	}
+	//消息列表点击事件
+	function MyNews_click(i)
+	{
+		var t=document.getElementById("mynews_t");
+		var m=document.getElementById("mynews_m");
+		t.innerHTML="from："+jsonData[i].from_tel;
+		m.innerHTML="&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+jsonData[i].data; 
+		news_id=i;
+	}
+	//删除我的消息
+	function delete_mynews()
+	{
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=xmlhttp.responseText;
+				alert(data);
+			}
+		}
+		var send_data="flag="+LeaOrPur+"_delete";
+		send_data+="&id="+jsonData[news_id].id;
+		xmlhttp.open("POST","../servlet/News",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+		xmlhttp.send(send_data);
+	}
+	//回复消息
+	function send_news()
+	{
+		var sendnews_data=$("#sendnews_data").val();
+		if(sendnews_data.length!=0)
+		{
+			var xmlhttp=creatXml();
+			xmlhttp.onreadystatechange=function()
+			{
+				if(xmlhttp.readyState==4&&xmlhttp.status==200)
+				{
+					var data=xmlhttp.responseText;
+					alert(data);
+					document.getElementById("sendnews_data").value=null;
+				}
+			}
+			var send_data="flag="+LeaOrPur+"_send";
+			send_data+="&sendnews_data="+sendnews_data+"&to_tel="+jsonData[news_id].from_tel;
+			xmlhttp.open("POST","../servlet/News",true);
+			xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");  
+			xmlhttp.send(send_data);
+		}
+		else
+			alert("发送内容不能为空！");
+	}
+	//处理订单
+	function verify(v)
+	{
+		var xmlhttp=creatXml();
+		xmlhttp.onreadystatechange=function()
+		{
+			if(xmlhttp.readyState==4&&xmlhttp.status==200)
+			{
+				var data=xmlhttp.responseText;
+				alert(data);
+			}
+		}
+		xmlhttp.open("POST","../servlet/Order",true);
+		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xmlhttp.send("action=generate&flag="+LeaOrPur+"_verify&id="+jsonData[news_id].id+"&verify="+v);
 	}
 </script>
 </html>

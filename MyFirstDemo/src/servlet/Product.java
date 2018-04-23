@@ -3,6 +3,8 @@ package servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -61,26 +63,53 @@ public class Product extends HttpServlet {
 	}
 	private void Rel_goods(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException
 	{
+		SimpleDateFormat dateformat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		PrintWriter out=response.getWriter();
 		DataBase mysql=new DataBase();
 		mysql.connect();
 		if(request.getParameter("flag").equals("lease"))
 		{
-			mysql.sqlUpdate("insert into lease_table (photo,seller_tel,name,introduction,price) values ('1','1','"
-			+request.getParameter("name")+"','"+request.getParameter("introduction")+"','"+request.getParameter("price")+"')");
-			mysql.sqlQuery("select * from lease_table where photo='1'");
-			if(mysql.getRs().next())
-				request.getSession().setAttribute("id", mysql.getRs().getString("id"));
+			if(request.getParameter("isRe_edit").equals("0"))
+			{
+				System.out.println(mysql.sqlUpdate("insert into lease_table (photo,seller_tel,name,introduction,price,addr,time,frequency) values ('1','1','"
+						+request.getParameter("name")+"','"+request.getParameter("introduction")+"','"+request.getParameter("price")+"','"
+						+request.getParameter("addr")+"','"+dateformat.format(new Date())+"',0)")+":product");
+				out.write("发布成功");
+			}
+			else if(request.getParameter("isRe_edit").equals("1"))
+			{
+				mysql.sqlUpdate("update lease_table set name='"+request.getParameter("name")+"',introduction='"+request.getParameter("introduction")
+				+"',price='"+request.getParameter("price")+"',addr='"+request.getParameter("addr")+"',time='"+dateformat.format(new Date())+"' where id="+request.getParameter("reEdit_id"));
+				out.write("发布成功");
+			}
+			else
+			{
+				mysql.sqlUpdate("delete from lease_table where id="+request.getParameter("reEdit_id"));
+				out.write("删除成功");
+			}
 		}
 		if(request.getParameter("flag").equals("purchase"))
 		{
-			mysql.sqlUpdate("insert into purchase_table (photo,seller_tel,name,introduction,price) values ('1','1','"
-			+request.getParameter("name")+"','"+request.getParameter("introduction")+"','"+request.getParameter("price")+"')");
-			mysql.sqlQuery("select * from purchase_table where photo='1'");
-			if(mysql.getRs().next())
-				request.getSession().setAttribute("id", mysql.getRs().getString("id"));
+			if(request.getParameter("isRe_edit").equals("0"))
+			{
+				mysql.sqlUpdate("insert into purchase_table (photo,seller_tel,name,introduction,price,addr,time,frequency) values ('1','1','"
+						+request.getParameter("name")+"','"+request.getParameter("introduction")+"','"+request.getParameter("price")+"','"
+						+request.getParameter("addr")+"','"+dateformat.format(new Date())+"',1)");
+				out.write("发布成功");
+			}
+			else if(request.getParameter("isRe_edit").equals("1"))
+			{
+				mysql.sqlUpdate("update purchase_table set name='"+request.getParameter("name")+"',introduction='"+request.getParameter("introduction")
+				+"',price='"+request.getParameter("price")+"',addr='"+request.getParameter("addr")+"',time='"+dateformat.format(new Date())+"' where id="+request.getParameter("reEdit_id"));
+				out.write("发布成功");
+			}
+			else
+			{
+				mysql.sqlUpdate("delete from purchase_table where id="+request.getParameter("reEdit_id"));
+				out.write("删除成功");
+			}
 		}
-		out.write("发布成功");
+
 	}
 	private void getMyGoods(HttpServletRequest request, HttpServletResponse response) throws IOException
 	{
@@ -104,6 +133,8 @@ public class Product extends HttpServlet {
 				jsonObject.put("id", mysql.getRs().getString("id"));
 				jsonObject.put("seller_tel", mysql.getRs().getString("seller_tel"));
 				jsonObject.put("price", mysql.getRs().getString("price"));
+				jsonObject.put("addr", mysql.getRs().getString("addr")); 
+				jsonObject.put("frequency", mysql.getRs().getString("frequency")); 
 				jsonArray.add(jsonObject);
 			}
 		} catch (SQLException e) {

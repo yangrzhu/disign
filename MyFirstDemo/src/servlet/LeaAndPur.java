@@ -49,21 +49,75 @@ public class LeaAndPur extends HttpServlet {
 		JSONArray jsonArray=new JSONArray();
 		DataBase mysql=new DataBase();
 		mysql.connect();
-		String sql;
+		String sql="";
 		if(request.getParameter("flag").equals("lease"))
-			if(request.getParameter("find").equals("onload"))
+		{
+			if(request.getParameter("choose_order").equals("time"))
 			{
-				System.out.println("select * from lease_table where addr='"+request.getParameter("addr")+"'");
-				sql="select * from lease_table where addr='"+request.getParameter("addr")+"'";
+				if(request.getParameter("time_order").equals("0"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"'";
+				else if(request.getParameter("time_order").equals("1"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by time asc";
+				else
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by time desc";
 			}
-			else 
-				sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")+"'";
-		else
-			if(request.getParameter("find").equals("onload"))
-				sql="select * from purchase_table where addr='"+request.getParameter("addr")+"'";
+			else if(request.getParameter("choose_order").equals("heat"))
+			{
+				if(request.getParameter("heat_order").equals("0"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"'";
+				else if(request.getParameter("heat_order").equals("1"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by frequency asc";
+				else
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by frequency desc";
+			}
 			else
-				sql="select * from purchase_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")+"'";
+			{
+				if(request.getParameter("price_order").equals("0"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"'";
+				else if(request.getParameter("price_order").equals("1"))
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by price asc";
+				else
+					sql="select * from lease_table where name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by price desc";
+			}
+		}
+		else
+		{
+			if(request.getParameter("choose_order").equals("time"))
+			{
+				if(request.getParameter("time_order").equals("0"))
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"'";
+				else if(request.getParameter("time_order").equals("1"))
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by time asc";
+				else
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by time desc";
+			}
+			else
+			{
+				if(request.getParameter("price_order").equals("0"))
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"'";
+				else if(request.getParameter("price_order").equals("1"))
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by price asc";
+				else
+					sql="select * from purchase_table where frequency>0 and name like '%"+request.getParameter("name")+"%' and addr='"+request.getParameter("addr")
+					+"' order by price desc";
+			}
+		}
 		try {
+			System.out.println(sql);
 			mysql.sqlQuery(sql);
 			while(mysql.getRs().next())
 			{
@@ -74,6 +128,7 @@ public class LeaAndPur extends HttpServlet {
 				jsonObject.put("id", mysql.getRs().getString("id"));
 				jsonObject.put("seller_tel", mysql.getRs().getString("seller_tel"));
 				jsonObject.put("price", mysql.getRs().getString("price"));
+				jsonObject.put("addr", mysql.getRs().getString("addr"));
 				jsonArray.add(jsonObject);
 			}
 		} catch (SQLException e) {

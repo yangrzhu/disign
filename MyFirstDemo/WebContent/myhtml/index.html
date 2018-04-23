@@ -7,6 +7,7 @@
 	<link rel="stylesheet"  href="../jquery/jquery.mobile-1.4.5.css">
 	<script src="../jquery/jquery.js"></script>
 	<script src="../jquery/jquery.mobile-1.4.5.js"></script>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script>
 </head>
 
 <body>
@@ -58,7 +59,7 @@
 		var img1=document.getElementById("login_img");
 		var img2=document.getElementById("register_img");
 		img1.style.width=window.screen.width+"px";
-		img1.style.height=window.screen.width/3+"px";
+		img1.style.height=window.screen.width*4/11+"px";
 		img2.style.width=window.screen.width+"px";
 		img2.style.height=window.screen.width/3+"px";
 	}
@@ -88,6 +89,7 @@
 							alert("该账号还没注册");
 					}
 				}
+				pw=md5(pw);
 				var data="flag=login";
 				data+="&tel="+tel+"&password="+pw;
 				xmlhttp.open("POST","../servlet/LogAndReg",true);
@@ -128,6 +130,7 @@
 							alert("该账号已经注册");
 					}
 				}
+				pw=md5(pw);
 				var data="flag=register";
 				data+="&tel="+tel+"&password="+pw;
 				xmlhttp.open("POST","../servlet/LogAndReg",true);

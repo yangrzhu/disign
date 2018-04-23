@@ -65,6 +65,22 @@
     <servlet-name>News</servlet-name>
     <url-pattern>/servlet/News</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>Update</servlet-name>
+    <servlet-class>servlet.Update</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Update</servlet-name>
+    <url-pattern>/servlet/Update</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>Text</servlet-name>
+    <servlet-class>servlet.Text</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Text</servlet-name>
+    <url-pattern>/servlet/Text</url-pattern>
+  </servlet-mapping>
   <filter>
     <filter-name>MyFilter</filter-name>
     <filter-class>filter.MyFilter</filter-class>
